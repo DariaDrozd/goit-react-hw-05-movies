@@ -1,33 +1,49 @@
-import { getFilmInfoReviews } from "api/getFilms"
-import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { getReviews } from '../../Api/fetchApi';
 
-import cssReviews from './Reviews.module.css'
+import {
+  ReviewsWrapper,
+  ReviewsList,
+  ReviewsItem,
+  ReviewAuthor,
+  ReviewContent,
+  DefaultReview,
+} from './Reviews.styled';
 
-export default function Reviews () {
-    const {movieId} = useParams()
-    const [reviewsContent, setReviewsContent] = useState([])
+const Reviews = () => {
+  const [reviews, setReviews] = useState([]);
+  const { movieId } = useParams();
 
-    useEffect(()=> {
-        reviewsData()
-        async function reviewsData () {
-            const data = await getFilmInfoReviews(movieId)
-            setReviewsContent(data.results)
-            
-        }
-    },[movieId])
+  useEffect(() => {
+    const getMovieReviews = async () => {
+      if (!movieId) return;
+      try {
+        const reviews = await getReviews(movieId);
+        setReviews(reviews);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getMovieReviews();
+  }, [movieId]);
 
-    return <>
-        {!reviewsContent.length ? <p>Наразі стрічка не має оглядів</p> : 
-            <ol className={cssReviews.reviewsList}>
-                {reviewsContent && reviewsContent.map(el => (
-                    <li key={el.id} className={cssReviews.item}>
-                        <h4>Автор: {el.author}</h4>
-                        <p>{el.content}</p>
-                    </li>
-                ))}       
-            </ol>
-        }
-    </>
-
-}
+  return (
+    <ReviewsWrapper>
+      {reviews.length === 0 && (
+        <DefaultReview>We don't have any reviews for this film</DefaultReview>
+      )}
+      {reviews.length > 0 && (
+        <ReviewsList>
+          {reviews.map(({ id, author, content }) => (
+            <ReviewsItem key={id}>
+              <ReviewAuthor>Author: {author}</ReviewAuthor>
+              <ReviewContent>{content}</ReviewContent>
+            </ReviewsItem>
+          ))}
+        </ReviewsList>
+      )}
+    </ReviewsWrapper>
+  );
+};
+export default Reviews;
