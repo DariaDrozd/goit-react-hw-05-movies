@@ -1,0 +1,16 @@
+.addMoreBtn {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    margin-left: auto;
+    margin-right: auto;
+
+    width: 250px;
+    height: 35px;
+
+}
+
+
+.addMoreBtn:hover, .addMoreBtn:focus {
+    cursor: pointer;
+}
